@@ -1,0 +1,140 @@
+{
+  "entities": {
+    "StockRecord": {
+      "title": "StockRecord",
+      "description": "Inventory stock record for a specific Primary Health Centre and medicine",
+      "type": "object",
+      "properties": {
+        "phcId": {
+          "type": "string",
+          "description": "PHC identifier"
+        },
+        "medicineId": {
+          "type": "string",
+          "description": "Medicine identifier"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Current quantity in base units"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "ISO timestamp of last inventory update"
+        },
+        "expiryDate": {
+          "type": "string",
+          "description": "Batch expiry date"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Name or ID of person who updated the stock"
+        },
+        "batchNumber": {
+          "type": "string",
+          "description": "Manufacturing batch number"
+        }
+      },
+      "required": [
+        "phcId",
+        "medicineId",
+        "quantity",
+        "lastUpdated",
+        "expiryDate",
+        "updatedBy"
+      ]
+    },
+    "RedistributionRecommendation": {
+      "title": "RedistributionRecommendation",
+      "description": "Inter-facility medicine transfer recommendation to balance deficits and surpluses",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Recommendation unique ID"
+        },
+        "fromPhcId": {
+          "type": "string",
+          "description": "Donor PHC identifier"
+        },
+        "toPhcId": {
+          "type": "string",
+          "description": "Receiver PHC identifier"
+        },
+        "medicineId": {
+          "type": "string",
+          "description": "Transferred medicine ID"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity to transfer"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW"],
+          "description": "Transfer urgency"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Operational justification"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "APPROVED", "REJECTED"],
+          "description": "Approval status"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp created"
+        },
+        "reviewedAt": {
+          "type": "string",
+          "description": "Timestamp reviewed"
+        },
+        "reviewedBy": {
+          "type": "string",
+          "description": "Officer reviewer name"
+        },
+        "reviewNotes": {
+          "type": "string",
+          "description": "Reviewer notes"
+        }
+      },
+      "required": [
+        "id",
+        "fromPhcId",
+        "toPhcId",
+        "medicineId",
+        "quantity",
+        "priority",
+        "reason",
+        "status",
+        "createdAt"
+      ]
+    },
+    "SystemTest": {
+      "title": "SystemTest",
+      "description": "System health and connectivity verification document",
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "description": "Health status"
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/stockRecords/{stockId}": {
+      "schema": "StockRecord",
+      "description": "Stock records tracking medicine levels per PHC"
+    },
+    "/redistributions/{redistributionId}": {
+      "schema": "RedistributionRecommendation",
+      "description": "Cross-facility redistribution recommendations"
+    },
+    "/test/{testId}": {
+      "schema": "SystemTest",
+      "description": "System connection test endpoint"
+    }
+  }
+}

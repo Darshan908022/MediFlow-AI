@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidStockRecord(data) {
+      return data.phcId is string && data.phcId.size() > 0 && data.phcId.size() <= 64
+        && data.medicineId is string && data.medicineId.size() > 0 && data.medicineId.size() <= 64
+        && data.quantity is number && data.quantity >= 0 && data.quantity <= 1000000
+        && data.lastUpdated is string && data.lastUpdated.size() <= 100
+        && data.expiryDate is string && data.expiryDate.size() <= 100
+        && data.updatedBy is string && data.updatedBy.size() <= 100;
+    }
+
+    function isValidRedistribution(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.fromPhcId is string && data.fromPhcId.size() <= 64
+        && data.toPhcId is string && data.toPhcId.size() <= 64
+        && data.medicineId is string && data.medicineId.size() <= 64
+        && data.quantity is number && data.quantity > 0 && data.quantity <= 1000000
+        && data.priority in ['HIGH', 'MEDIUM', 'LOW']
+        && data.status in ['PENDING', 'APPROVED', 'REJECTED']
+        && data.reason is string && data.reason.size() <= 500
+        && data.createdAt is string && data.createdAt.size() <= 100;
+    }
+
+    // Stock Records Collection
+    match /stockRecords/{stockId} {
+      allow read: if true;
+      allow create, update: if isValidId(stockId) && isValidStockRecord(request.resource.data);
+      allow delete: if false;
+    }
+
+    // Redistribution Recommendations Collection
+    match /redistributions/{redistributionId} {
+      allow read: if true;
+      allow create, update: if isValidId(redistributionId) && isValidRedistribution(request.resource.data);
+      allow delete: if false;
+    }
+
+    // Health / Connection test doc
+    match /test/{testId} {
+      allow read: if isValidId(testId);
+      allow write: if false;
+    }
+
+    // Global default-deny fallback
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

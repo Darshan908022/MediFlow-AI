@@ -1,0 +1,6 @@
+{
+  "name": "MediFlow AI",
+  "description": "Real-time Primary Health Centre (PHC) supply chain intelligence and predictive redistribution platform for India.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
